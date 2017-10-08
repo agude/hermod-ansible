@@ -1,0 +1,62 @@
+---
+
+# Set up ssh to be secure as recommended by:
+# https://stribika.github.io/2015/01/04/secure-secure-shell.html
+
+- name: Install sshd
+  apt:
+    name: openssh-server
+    state: latest
+    update_cache: yes
+    cache_valid_time: 3600
+  become: yes
+
+- name: Create an ssh group to restrict logins
+  group:
+    name: ssh-user
+    state: present
+  become: yes
+
+- name: Add my user to the ssh-user group
+  user:
+    name: agude
+    append: yes
+    groups: ssh-user
+    state: present
+  become: yes
+
+- name: Copying safer sshd_config
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: "0644"
+    validate: /usr/sbin/sshd -T -f %s
+    backup: yes
+  become: yes
+  notify:
+    - Restart sshd
+
+- name: Copying safer ssh_config
+  template:
+    src: ssh_config.j2
+    dest: /etc/ssh/ssh_config
+    owner: root
+    group: root
+    mode: "0644"
+    backup: yes
+  become: yes
+  notify:
+    - Restart sshd
+
+- name: Remove primes with size less than 2000 from "/etc/ssh/moduli"
+  lineinfile:
+    dest: /etc/ssh/moduli
+    # 14 digits, folowed by " 2 6 100 " and then either a 3 or 4 digit number
+    # starting with 0 or 1
+    regexp: "^\\d{14} 2 6 100 ([0-1][0-9][0-9][0-9]|[0-1][0-9][0-9])"
+    state: absent
+  become: yes
+  notify:
+    - Restart sshd

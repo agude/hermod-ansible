@@ -1,0 +1,5 @@
+- name: A playbook to setup Prosody on Lightsail
+  hosts:
+    - lightsail
+  roles:
+    - common

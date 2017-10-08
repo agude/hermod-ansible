@@ -1,0 +1,4 @@
+---
+
+  - include: upgrade-packages.yaml
+  - include: sshd-harden.yaml
