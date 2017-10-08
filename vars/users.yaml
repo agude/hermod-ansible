@@ -1,0 +1,9 @@
+---
+
+users:
+  normal:
+    - agude
+    - veldrina
+  sudo:
+    - agude
+    - veldrina

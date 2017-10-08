@@ -3,6 +3,8 @@
 # Set up ssh to be secure as recommended by:
 # https://stribika.github.io/2015/01/04/secure-secure-shell.html
 
+- include_vars: vars/users.yaml
+
 - name: Install sshd
   apt:
     name: openssh-server
@@ -17,13 +19,14 @@
     state: present
   become: yes
 
-- name: Add my user to the ssh-user group
+- name: Add users to the ssh-user group
   user:
-    name: agude
+    name: "{{ item }}"
     append: yes
     groups: ssh-user
     state: present
   become: yes
+  with_items: "{{ users.normal }}"
 
 - name: Copying safer sshd_config
   template:
