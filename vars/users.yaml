@@ -1,9 +1,7 @@
 ---
 
 users:
-  normal:
-    - agude
-    - veldrina
-  sudo:
-    - agude
-    - veldrina
+  - username: agude
+    sudo: true
+  - username: veldrina
+    sudo: true

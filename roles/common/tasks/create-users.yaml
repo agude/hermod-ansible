@@ -1,0 +1,40 @@
+---
+
+# Add users to the machine
+
+- include_vars: vars/users.yaml
+
+# Add users
+- name: Creating unique group for each user
+  group:
+    name: "{{ item }}"
+    state: present
+  become: true
+  with_items: "{{ users.normal }}"
+
+- name: Adding users
+  user:
+    name: "{{ item.username }}"
+    password: ''
+    update_password: on_create
+    group: "{{ item.username }}"
+    append: true
+    shell: /bin/bash
+    createhome: yes
+    state: present
+  become: true
+  with_items: "{{users}}"
+  loop_control:
+    label: "{{ item.username }}"
+
+- name: Adding users to sudo group
+  user:
+    name: "{{ item.username }}"
+    groups: "sudo"
+    append: true
+    state: present
+  become: true
+  with_items: "{{users}}"
+  loop_control:
+    label: "{{ item.username }}"
+  when: "{{ item.sudo }}"

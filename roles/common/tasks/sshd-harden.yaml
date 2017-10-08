@@ -21,12 +21,14 @@
 
 - name: Add users to the ssh-user group
   user:
-    name: "{{ item }}"
+    name: "{{ item.username }}"
     append: yes
     groups: ssh-user
     state: present
   become: yes
-  with_items: "{{ users.normal }}"
+  with_items: "{{ users }}"
+  loop_control:
+    label: "{{ item.username }}"
 
 - name: Copying safer sshd_config
   template:
