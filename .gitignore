@@ -1,0 +1,5 @@
+# Ansible retry files
+*.retry
+
+# Valut Pass
+.vault_pass.txt
