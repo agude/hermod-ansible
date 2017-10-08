@@ -1,0 +1,81 @@
+---
+# The MIT License (MIT)
+#
+# Copyright (c) 2014 elnappo
+#
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation files
+# (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge,
+# publish, distribute, sublicense, and/or sell copies of the Software,
+# and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+# BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+# ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+- include_vars: vars/prosody.yaml
+
+# tasks file for ansible-role-prosody
+- name: Add Prosody repository key
+  apt_key:
+    url: https://prosody.im/files/prosody-debian-packages.key
+    state: present
+
+- name: Add Prosody repository
+  apt_repository:
+    # {{ ansible_distribution_release is the ubuntu codename
+    repo: "deb http://packages.prosody.im/debian {{ ansible_distribution_release }} main"
+
+- name: Install Prosody and required packages
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - mercurial
+    - lua-event
+    - lua-zlib
+    - "{{ prosody_package }}"
+
+- name: Configure Prosody
+  template:
+    src: prosody.cfg.lua
+    dest: /etc/prosody/prosody.cfg.lua
+    group: root
+    owner: root
+    mode: 0755
+  notify: restart prosody
+
+- name: Create parameters for Diffie–Hellman (could take a while)
+  command: "openssl dhparam -out /etc/prosody/certs/dh-{{ prosody_dhparam_length }}.pem {{ prosody_dhparam_length }}"
+    creates: "/etc/prosody/certs/dh-{{ prosody_dhparam_length }}.pem"
+  notify: restart prosody
+
+- name: Get prosody external modules repository
+  hg:
+    repo: https://hg.prosody.im/prosody-modules/
+    dest: /usr/share/prosody-external-modules
+
+- name: Start and enable prosody on boot
+  service:
+    name: prosody
+    state: started
+    enabled: yes
+
+- name: Set firewall rules for Prosody
+  ufw:
+    port: "{{ item }}"
+    proto: tcp
+    rule: allow
+  with_items:
+    - 5222
+    - 5269
+  when: prosody_setup_ufw
