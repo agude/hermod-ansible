@@ -1,0 +1,42 @@
+---
+
+packages:
+  install:
+    - openssh-blacklist
+    - openssh-blacklist-extra
+    - openssh-server
+    - screen
+  remove:
+    - appmenu-qt*
+    - brltty
+    - deja-dup
+    - gnome-mahjongg
+    - gnome-orca
+    - gnome-sudoku
+    - indicator-appmenu
+    - overlay-scrollbar
+    - rhythmbox*
+    - transmission*
+    - thunderbird
+    - ubuntuone*
+    - gnome-mines
+    - unity-webapps*
+    - unity-scope-audacious
+    - unity-scope-chromiumbookmarks
+    - unity-scope-clementine
+    - unity-scope-colourlovers
+    - unity-scope-devhelp
+    - unity-scope-firefoxbookmarks
+    - unity-scope-gdrive
+    - unity-scope-gmusicbrowser
+    - unity-scope-gourmet
+    - unity-scope-guayadeque
+    - unity-scope-musicstores
+    - unity-scope-musique
+    - unity-scope-openclipart
+    - unity-scope-texdoc
+    - unity-scope-tomboy
+    - unity-scope-video-remote
+    - unity-scope-virtualbox
+    - unity-scope-yelp
+    - unity-scope-zotero

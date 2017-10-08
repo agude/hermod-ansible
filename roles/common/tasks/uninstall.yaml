@@ -1,0 +1,13 @@
+---
+
+# Remove unneeded default packages
+
+- include_vars: vars/apt-packages.yaml
+
+- name: Remove unused default packages
+  apt:
+    name: "{{ item }}"
+    state: absent
+    purge: true
+  become: true
+  with_items: "{{ packages.remove }}"
