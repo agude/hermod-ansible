@@ -30,11 +30,13 @@
   apt_key:
     url: https://prosody.im/files/prosody-debian-packages.key
     state: present
+  become: yes
 
 - name: Add Prosody repository
   apt_repository:
-    # {{ ansible_distribution_release is the ubuntu codename
+    # {{ ansible_distribution_release }} is the ubuntu codename
     repo: "deb http://packages.prosody.im/debian {{ ansible_distribution_release }} main"
+  become: yes
 
 - name: Install Prosody and required packages
   apt:
@@ -44,6 +46,7 @@
     - lua-event
     - lua-zlib
     - "{{ prosody_package }}"
+  become: yes
 
 - name: Configure Prosody
   template:
@@ -52,30 +55,33 @@
     group: root
     owner: root
     mode: 0755
-  notify: restart prosody
+  notify: Restart prosody
+  become: yes
 
-- name: Create parameters for Diffie–Hellman (could take a while)
-  command: "openssl dhparam -out /etc/prosody/certs/dh-{{ prosody_dhparam_length }}.pem {{ prosody_dhparam_length }}"
-    creates: "/etc/prosody/certs/dh-{{ prosody_dhparam_length }}.pem"
-  notify: restart prosody
+#- name: Create parameters for Diffie–Hellman (could take a while)
+#  command: "openssl dhparam -out /etc/prosody/certs/dh-{{ prosody_dhparam_length }}.pem {{ prosody_dhparam_length }}"
+#    creates: "/etc/prosody/certs/dh-{{ prosody_dhparam_length }}.pem"
+#  notify: Restart prosody
 
 - name: Get prosody external modules repository
   hg:
     repo: https://hg.prosody.im/prosody-modules/
     dest: /usr/share/prosody-external-modules
+  become: yes
 
 - name: Start and enable prosody on boot
   service:
     name: prosody
     state: started
     enabled: yes
+  become: yes
 
-- name: Set firewall rules for Prosody
-  ufw:
-    port: "{{ item }}"
-    proto: tcp
-    rule: allow
-  with_items:
-    - 5222
-    - 5269
-  when: prosody_setup_ufw
+    #- name: Set firewall rules for Prosody
+    #  ufw:
+    #    port: "{{ item }}"
+    #    proto: tcp
+    #    rule: allow
+    #  with_items:
+    #    - 5222
+    #    - 5269
+    #  when: prosody_setup_ufw
