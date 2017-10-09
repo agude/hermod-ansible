@@ -1,6 +1,6 @@
 ---
 
-  - include: upgrade-packages.yaml
-  - include: install.yaml
-  - include: uninstall.yaml
-  - include: sshd-harden.yaml
+  - include_tasks: upgrade-packages.yaml
+  - include_tasks: install.yaml
+  - include_tasks: uninstall.yaml
+  - include_tasks: sshd-harden.yaml
