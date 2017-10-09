@@ -45,6 +45,7 @@
     - mercurial
     - lua-event
     - lua-zlib
+    - lua-dbi-sqlite3
     - "{{ prosody_package }}"
   become: yes
 
