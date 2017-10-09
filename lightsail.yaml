@@ -3,3 +3,4 @@
     - lightsail
   roles:
     - common
+    - prosody
