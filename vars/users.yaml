@@ -1,7 +1,5 @@
 ---
 
 users:
-  - username: agude
-    sudo: true
-  - username: veldrina
+  - username: ubuntu
     sudo: true
