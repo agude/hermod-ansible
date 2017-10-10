@@ -29,17 +29,33 @@ prosody_package: prosody-0.10
 prosody_admins: []
 prosody_allow_registration: False
 prosody_modules:
-  - private
-  - vcard
+  - admin_adhoc
+  - announce
+  - blocklist
+  - bosh
+  - carbons
+  - csi
+  - filter_chatstates
+  - mam
+  - pep
   - ping
+  - posix
+  - private
   - register
+  - smacks
+  - throttle_presence
+  - time
+  - uptime
+  - vcard
+  - version
 prosody_external_modules: []
 prosody_s2s_secure_domains:
   - jabber.org
   - jabber.ccc.de
   - jabber.de
-prosody_s2s_secure_auth: False
+prosody_s2s_secure_auth: True
 prosody_authentication: internal_hashed
 prosody_dhparam_length: 2048
 prosody_hosts:
   - domain: localhost
+prosody_storage: sqlite

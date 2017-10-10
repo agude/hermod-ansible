@@ -1,3 +1,4 @@
+{# Remove licese from the config on the host system by commenting it out.
 -- The MIT License (MIT)
 --
 -- Copyright (c) 2014 elnappo
@@ -21,8 +22,7 @@
 -- ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 -- CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
-
-
+#}
 -- This file is ansible managed
 
 {% macro quoted_list(list) %}
@@ -154,19 +154,41 @@ authentication = "{{ prosody_authentication }}"
 -- through modules. An "sql" backend is included by default, but requires
 -- additional dependencies. See http://prosody.im/doc/storage for more info.
 
+{% if prosody_storage is equalto "sqlite"
+    or prosody_storage is equalto "mysql"
+    or prosody_storage is equalto "postgresql"
+%}
+storage = "sql" -- Default is "internal"
+{% else %}
 --storage = "sql" -- Default is "internal"
+{% endif %}
 
 -- For the "sql" backend, you can uncomment *one* of the below to configure:
+{% if prosody_storage is equalto "sqlite" %}
+sql = { driver = "SQLite3", database = "prosody.sqlite" } -- Default. 'database' is the filename.
+--sql = { driver = "MySQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
+--sql = { driver = "PostgreSQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
+{% elif prosody_storage is equalto "mysql" %}
+--sql = { driver = "SQLite3", database = "prosody.sqlite" } -- Default. 'database' is the filename.
+sql = { driver = "MySQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
+--sql = { driver = "PostgreSQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
+{% elif prosody_storage is equalto "postgresql" %}
+--sql = { driver = "SQLite3", database = "prosody.sqlite" } -- Default. 'database' is the filename.
+--sql = { driver = "MySQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
+sql = { driver = "PostgreSQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
+{% else %}
 --sql = { driver = "SQLite3", database = "prosody.sqlite" } -- Default. 'database' is the filename.
 --sql = { driver = "MySQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
 --sql = { driver = "PostgreSQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
+{% endif %}
 
 -- Logging configuration
 -- For advanced logging see http://prosody.im/doc/logging
 log = {
 	info = "/var/log/prosody/prosody.log"; -- Change 'info' to 'debug' for verbose logging
 	error = "/var/log/prosody/prosody.err";
-	"*syslog";
+	"*syslog"; -- logging to syslog
+	-- "*console"; -- Log to the console, useful for debugging with daemonize=false
 }
 
 ----------- Virtual hosts -----------
