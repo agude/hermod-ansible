@@ -1,3 +1,4 @@
+{# jinja2: trim_blocks: "true", lstrip_blocks: "true" #}
 {# Remove licese from the config on the host system by commenting it out.
 -- The MIT License (MIT)
 --
@@ -23,7 +24,7 @@
 -- CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 #}
--- This file is ansible managed
+-- {{ ansible_managed }}
 
 {% macro quoted_list(list) %}
 {%   if list is defined and list %}
@@ -55,10 +56,12 @@
 -- for the server. Note that you must create the accounts separately
 -- (see http://prosody.im/doc/creating_accounts for info)
 -- Example: admins = { "user1@example.com", "user2@example.net" }
+
 admins = { {{ quoted_list(prosody_admins) }} }
 
 -- Enable use of libevent for better performance under high load
 -- For more information see: http://prosody.im/doc/libevent
+
 use_libevent = true
 
 {% if prosody_external_modules |length > 0 %}
@@ -71,16 +74,16 @@ plugin_paths = { "/usr/share/prosody-external-modules" }
 -- Documentation on modules can be found at: http://prosody.im/doc/modules
 modules_enabled = {
 
-	-- Generally required
-	"roster"; -- Allow users to have a roster. Recommended ;)
-	"saslauth"; -- Authentication for clients and servers. Recommended if you want to log in.
-	"tls"; -- Add support for secure TLS on c2s/s2s connections
-	"dialback"; -- s2s dialback support
-	"disco"; -- Service discovery
+    -- Generally required
+    "roster"; -- Allow users to have a roster. Recommended ;)
+    "saslauth"; -- Authentication for clients and servers. Recommended if you want to log in.
+    "tls"; -- Add support for secure TLS on c2s/s2s connections
+    "dialback"; -- s2s dialback support
+    "disco"; -- Service discovery
 
-	-- Other modules
+    -- Other modules
 {% for module in prosody_modules %}
-	"{{ module }}";
+    "{{ module }}";
 {% endfor %}
 
 }
@@ -88,27 +91,29 @@ modules_enabled = {
 -- These modules are auto-loaded, but should you want
 -- to disable them then uncomment them here:
 modules_disabled = {
-	-- "offline"; -- Store offline messages
-	-- "c2s"; -- Handle client connections
-	-- "s2s"; -- Handle server-to-server connections
-	-- "posix"; -- POSIX functionality, sends server to background, enables syslog, etc.
+    -- "offline"; -- Store offline messages
+    -- "c2s"; -- Handle client connections
+    -- "s2s"; -- Handle server-to-server connections
+    -- "posix"; -- POSIX functionality, sends server to background, enables syslog, etc.
 }
 
 -- Disable account creation by default, for security
 -- For more information see http://prosody.im/doc/creating_accounts
+
 allow_registration = {{ bool(prosody_allow_registration) }}
 
 -- These are the SSL/TLS-related settings. If you don't want
 -- to use SSL/TLS, you may comment or remove this
+
 ssl = {
-	key = "/etc/prosody/certs/localhost.key";
-	certificate = "/etc/prosody/certs/localhost.crt";
-	dhparam = "/etc/prosody/certs/dh-{{ prosody_dhparam_length }}.pem";
+    key = "/etc/prosody/certs/localhost.key";
+    certificate = "/etc/prosody/certs/localhost.crt";
+    dhparam = "/etc/prosody/certs/dh-{{ prosody_dhparam_length }}.pem";
 {% if prosody_ssl_protocol is defined %}
-	protocol = "{{ prosody_ssl_protocol }}";
+    protocol = "{{ prosody_ssl_protocol }}";
 {% endif %}
 {% if prosody_ssl_ciphers is defined %}
-	ciphers = "{{ prosody_ssl_ciphers }}";
+    ciphers = "{{ prosody_ssl_ciphers }}";
 {% endif %}
 }
 
@@ -138,6 +143,7 @@ s2s_secure_auth = {{ bool(prosody_s2s_secure_auth) }}
 s2s_secure_domains = { {{ quoted_list(prosody_s2s_secure_domains) }} }
 
 -- Required for init scripts and prosodyctl
+
 pidfile = "/var/run/prosody/prosody.pid"
 
 -- Select the authentication backend to use. The 'internal' providers
@@ -164,31 +170,19 @@ storage = "sql" -- Default is "internal"
 {% endif %}
 
 -- For the "sql" backend, you can uncomment *one* of the below to configure:
-{% if prosody_storage is equalto "sqlite" %}
-sql = { driver = "SQLite3", database = "prosody.sqlite" } -- Default. 'database' is the filename.
---sql = { driver = "MySQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
---sql = { driver = "PostgreSQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
-{% elif prosody_storage is equalto "mysql" %}
---sql = { driver = "SQLite3", database = "prosody.sqlite" } -- Default. 'database' is the filename.
-sql = { driver = "MySQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
---sql = { driver = "PostgreSQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
-{% elif prosody_storage is equalto "postgresql" %}
---sql = { driver = "SQLite3", database = "prosody.sqlite" } -- Default. 'database' is the filename.
---sql = { driver = "MySQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
-sql = { driver = "PostgreSQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
-{% else %}
---sql = { driver = "SQLite3", database = "prosody.sqlite" } -- Default. 'database' is the filename.
---sql = { driver = "MySQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
---sql = { driver = "PostgreSQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
-{% endif %}
+
+{% if prosody_storage is not equalto "sqlite" %}--{% endif %}sql = { driver = "SQLite3", database = "prosody.sqlite" } -- Default. 'database' is the filename.
+{% if prosody_storage is not equalto "mysql" %}--{% endif %}sql = { driver = "MySQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
+{% if prosody_storage is not equalto "postgresql" %}--{% endif %}sql = { driver = "PostgreSQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
 
 -- Logging configuration
 -- For advanced logging see http://prosody.im/doc/logging
+
 log = {
-	info = "/var/log/prosody/prosody.log"; -- Change 'info' to 'debug' for verbose logging
-	error = "/var/log/prosody/prosody.err";
-	"*syslog"; -- logging to syslog
-	-- "*console"; -- Log to the console, useful for debugging with daemonize=false
+    info = "/var/log/prosody/prosody.log"; -- Change 'info' to 'debug' for verbose logging
+    error = "/var/log/prosody/prosody.err";
+    "*syslog"; -- logging to syslog
+    -- "*console"; -- Log to the console, useful for debugging with daemonize=false
 }
 
 ----------- Virtual hosts -----------
@@ -197,14 +191,16 @@ log = {
 
 {% for host in prosody_hosts %}
 VirtualHost "{{ host.domain }}"
-{% if host.ssl_cert is defined and host.ssl_key is defined %}
-	ssl = {
-		key = "{{ host.ssl_key }}";
-		certificate = "{{ host.ssl_cert }}";
-	}
+{% if host.admins is not none and host.admins is defined and host.admins|length >= 1 %}
+    admins = { {{ quoted_list(host.admins) }} }
+{% endif %}{% if host.ssl_cert is defined and host.ssl_key is defined %}
+    ssl = {
+        key = "{{ host.ssl_key }}";
+        certificate = "{{ host.ssl_cert }}";
+    }
 {% endif %}
-{% endfor %}
 
+{% endfor %}
 ------ Components ------
 -- You can specify components to add hosts that provide special services,
 -- like multi-user conferences, and transports.
@@ -223,4 +219,4 @@ VirtualHost "{{ host.domain }}"
 -- see: http://prosody.im/doc/components#adding_an_external_component
 --
 --Component "gateway.example.com"
---	component_secret = "password"
+--  component_secret = "password"
