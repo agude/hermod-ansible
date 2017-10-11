@@ -67,8 +67,8 @@ use_libevent = true
 {% if prosody_external_modules |length > 0 %}
 -- These paths are searched in the order specified, and before the default path
 plugin_paths = { "/usr/share/prosody-external-modules" }
-{% endif %}
 
+{% endif %}
 -- This is the list of modules Prosody will load on startup.
 -- It looks for mod_modulename.lua in the plugins folder, so make sure that exists too.
 -- Documentation on modules can be found at: http://prosody.im/doc/modules
@@ -191,6 +191,7 @@ log = {
 
 {% for host in prosody_hosts %}
 VirtualHost "{{ host.domain }}"
+    enabled = true
 {% if host.admins is not none and host.admins is defined and host.admins|length >= 1 %}
     admins = { {{ quoted_list(host.admins) }} }
 {% endif %}{% if host.ssl_cert is defined and host.ssl_key is defined %}
@@ -207,10 +208,17 @@ VirtualHost "{{ host.domain }}"
 -- For more information on components, see http://prosody.im/doc/components
 
 ---Set up a MUC (multi-user chat) room server on conference.example.com:
---Component "conference.example.com" "muc"
+{% if muc_domain is defined %}
+Component "{{ muc_domain }}" "muc"
+    name = "{{ muc_name }}"
+{% endif %}
 
 -- Set up a SOCKS5 bytestream proxy for server-proxied file transfers:
---Component "proxy.example.com" "proxy65"
+{% if socks_domain is defined %}
+Component "{{ socks_domain }}" "proxy65"
+	proxy65_address = "{{ socks_proxy65_address }}"
+	proxy65_acl = { {{ quoted_list(socks_proxy65_acl) }} }
+{% endif %}
 
 ---Set up an external component (default component port is 5347)
 --
