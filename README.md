@@ -2,15 +2,24 @@
 
 ## Getting started
 
-Run the following script on Lightsail when created:
+You will need to map the hostname `lightsail` to the address of your
+instance, either the public IP address or a URL if you have already set up
+DNS.
 
-```bash
-apt-get install ansible -y
+You can do this by changing the inventory file
+[`inventory.yaml`](/inventory.yaml) to the following:
+
+```yaml
+all:
+  hosts:
+    lightsail:
+      ansible_host: ip_address
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
 ```
 
-Then you will need to map the hostname `lightsail` to the address of your
-instance, either the public IP address or a URL if you have already set up
-DNS. You can do this in your `~/.ssh/config` file as follows:
+where ip_address should be changed to the public IP of your instance (or URL).
+Alternatively you can set the address in your `~/.ssh/config` as follows:
 
 ```
 # Lightsail
@@ -20,17 +29,8 @@ Host lightsail
     IdentityFile ~/.ssh/key_file_that_you_use
 ```
 
-Where you should change the `HostName` and `IdentityFile` to the right values
-for your instance and ssh key. You can instead set it in the `hosts` file in
-this repo, in which case you should add the lines:
-
-```
-[lightsail]
-ip_address
-```
-
-Then you can run the ansible from the base of the repository as follows:
+Then you run ansible on your local machine as follows:
 
 ```bash
-ansible-playbook -i ./hosts lightsail.yaml
+ansible-playbook -i ./inventory.yaml lightsail.yaml
 ```
