@@ -1,0 +1,24 @@
+---
+
+- name: Add certbot repository
+  apt_repository:
+    repo: 'ppa:certbot/certbot'
+  become: true
+
+- name: Install certbot
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  become: true
+  with_items:
+    - software-properties-common
+    - certbot
+
+- name: Add crontab entry to update "Let's Encrypt" certificate
+  cron:
+    name: "Run certbot to update the Let's Encrypt certificate"
+    job: 'certbot renew | logger -i -t "certbot"'
+    special_time: monthly
+    state: present
+  become: yes
