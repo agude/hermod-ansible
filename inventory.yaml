@@ -2,5 +2,6 @@ all:
   hosts:
     lightsail:
       ansible_host: lightsail
-      vars:
-        ansible_python_interpreter: /usr/bin/python3
+      ansible_user: ubuntu
+      # Python3 is the only Python on lightsail by default
+      ansible_python_interpreter: /usr/bin/python3
