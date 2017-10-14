@@ -23,11 +23,16 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# defaults file for ansible-role-prosody
-prosody_setup_ufw: True
+# The package to install from the prosody PPA
 prosody_package: prosody-0.10
+
+# Global admins
 prosody_admins: []
+
+# Allow registration
 prosody_allow_registration: False
+
+# Official modules
 prosody_modules:
   - admin_adhoc
   - announce
@@ -44,29 +49,50 @@ prosody_modules:
   - uptime
   - vcard
   - version
-prosody_external_modules: 
+
+# Modules from https://hg.prosody.im/prosody-modules/
+prosody_external_modules:
   - csi
   - filter_chatstates
   - smacks
   - throttle_presence
+
+# Domains to require certs from
+prosody_s2s_secure_auth: True
 prosody_s2s_secure_domains:
   - jabber.org
   - jabber.ccc.de
   - jabber.de
-prosody_s2s_secure_auth: True
+
+# Store backend
+prosody_storage: sqlite # or "mysql" or "postgresql"
+
+# Authentication backend
 prosody_authentication: internal_hashed
-prosody_dhparam_length: 2048
+
+# Certs
+prosody_cert_type: letsencrypt # or "ssl" or empty for none
+
+prosody_ssl: # Used if ssl is set for prosody_cert_type
+  dhparam_length: 2048
+  protocol: null
+  ciphers: []
+
+# Virtual hosts
 prosody_hosts:
   - domain: ursaoskius.com
     admins:
       - veldrina@ursaoskius.com
       - alex@ursaoskius.com
-    ssl_key: certs/example.com.key
-    ssl_cert: certs/example.com.crt
-prosody_storage: sqlite
+    ssl_key: null
+    ssl_cert: null
+
+# Multi-user chat
 muc_domain: rooms.ursaoskius.com
 muc_name: The ursaoskius.com chatrooms server
+
+# Proxy
 socks_domain: proxy.ursaoskius.com
 socks_proxy65_address: ursaoskius.com
-socks_proxy65_acl: 
+socks_proxy65_acl:
   - ursaoskius.com

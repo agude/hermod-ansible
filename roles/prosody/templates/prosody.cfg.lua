@@ -34,7 +34,6 @@
 {% macro bool(value) %}
 {{   'true' if value | bool else 'false' -}}
 {% endmacro %}
-
 -- Prosody XMPP Server Configuration
 --
 -- Information on configuring Prosody can be found on our
@@ -86,6 +85,11 @@ modules_enabled = {
     "{{ module }}";
 {% endfor %}
 
+    -- External modules from Mercurial
+{% for module in prosody_external_modules %}
+    "{{ module }}";
+{% endfor %}
+
 }
 
 -- These modules are auto-loaded, but should you want
@@ -102,21 +106,27 @@ modules_disabled = {
 
 allow_registration = {{ bool(prosody_allow_registration) }}
 
+{% if prosody_cert_type is equalto "letsencrypt" %}
+-- Let's Encrypt certificate location
+https_certificate = "/etc/prosody/certs/ursaoskius.com.crt"
+
+{% elif prosody_cert_type is equalto "ssl" %}
 -- These are the SSL/TLS-related settings. If you don't want
 -- to use SSL/TLS, you may comment or remove this
 
 ssl = {
     key = "/etc/prosody/certs/localhost.key";
     certificate = "/etc/prosody/certs/localhost.crt";
-    dhparam = "/etc/prosody/certs/dh-{{ prosody_dhparam_length }}.pem";
-{% if prosody_ssl_protocol is defined %}
-    protocol = "{{ prosody_ssl_protocol }}";
+    dhparam = "/etc/prosody/certs/dh-{{ prosody_ssl.dhparam_length }}.pem";
+{% if prosody_ssl.protocol is defined %}
+    protocol = "{{ prosody_ssl.protocol }}";
 {% endif %}
 {% if prosody_ssl_ciphers is defined %}
-    ciphers = "{{ prosody_ssl_ciphers }}";
+    ciphers = "{{ prosody_ssl.ciphers }}";
 {% endif %}
 }
 
+{% endif %}
 -- Force clients to use encrypted connections? This option will
 -- prevent clients from authenticating unless they are using encryption.
 
@@ -194,7 +204,12 @@ VirtualHost "{{ host.domain }}"
     enabled = true
 {% if host.admins is not none and host.admins is defined and host.admins|length >= 1 %}
     admins = { {{ quoted_list(host.admins) }} }
-{% endif %}{% if host.ssl_cert is defined and host.ssl_key is defined %}
+{% endif %}
+{% if host.ssl_cert is defined
+and host.ssl_key is defined 
+and host.ssl_cert is not none
+and host.ssl_key is not none
+%}
     ssl = {
         key = "{{ host.ssl_key }}";
         certificate = "{{ host.ssl_cert }}";
@@ -207,7 +222,7 @@ VirtualHost "{{ host.domain }}"
 -- like multi-user conferences, and transports.
 -- For more information on components, see http://prosody.im/doc/components
 
----Set up a MUC (multi-user chat) room server on conference.example.com:
+---Set up a MUC (multi-user chat) room server:
 {% if muc_domain is defined %}
 Component "{{ muc_domain }}" "muc"
     name = "{{ muc_name }}"
