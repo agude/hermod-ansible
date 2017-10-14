@@ -34,21 +34,21 @@ prosody_modules:
   - blocklist
   - bosh
   - carbons
-  - csi
-  - filter_chatstates
   - mam
   - pep
   - ping
   - posix
   - private
   - register
-  - smacks
-  - throttle_presence
   - time
   - uptime
   - vcard
   - version
-prosody_external_modules: []
+prosody_external_modules: 
+  - csi
+  - filter_chatstates
+  - smacks
+  - throttle_presence
 prosody_s2s_secure_domains:
   - jabber.org
   - jabber.ccc.de
