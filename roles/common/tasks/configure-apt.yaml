@@ -29,6 +29,7 @@
   with_items:
     - { regexp: '//Unattended-Upgrade::MinimalSteps "true";', replace: 'Unattended-Upgrade::MinimalSteps "true";' }
     - { regexp: '//Unattended-Upgrade::Remove-Unused-Dependencies "false";', replace: 'Unattended-Upgrade::Remove-Unused-Dependencies "true";'}
+    - { regexp: '//Unattended-Upgrade::Automatic-Reboot-Time "02:00";', replace: 'Unattended-Upgrade::Automatic-Reboot-Time "02:00";'}
 
 - name: Setting up /etc/apt/apt.conf.d/20auto-upgrades
   template:
