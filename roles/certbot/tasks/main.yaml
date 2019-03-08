@@ -22,3 +22,7 @@
     special_time: monthly
     state: present
   become: yes
+
+- name: Get a cert from "Let's Encrypt"
+  command: certbot certonly --standalone --preferred-challenges http -d ursaoskius.com -d proxy.ursaoskius.com -d rooms.ursaoskius.com -d upload.ursaoskius.com
+  become: yes
