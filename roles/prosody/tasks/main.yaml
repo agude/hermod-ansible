@@ -1,7 +1,7 @@
 ---
 # The MIT License (MIT)
 #
-# Copyright (c) 2014 elnappo
+# Copyright (c) 2014-2019 elnappo
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -69,7 +69,9 @@
 - name: Get prosody external modules repository
   hg:
     repo: https://hg.prosody.im/prosody-modules/
-    dest: /usr/share/prosody-external-modules
+    revision: default
+    update: true
+    dest: /usr/lib/prosody/community-modules
   become: yes
 
 - name: Start and enable prosody on boot
