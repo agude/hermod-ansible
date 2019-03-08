@@ -97,3 +97,6 @@ socks_domain: proxy.ursaoskius.com
 socks_proxy65_address: ursaoskius.com
 socks_proxy65_acl:
   - ursaoskius.com
+
+# File upload
+allow_file_upload: true

@@ -235,6 +235,12 @@ Component "{{ socks_domain }}" "proxy65"
 	proxy65_acl = { {{ quoted_list(socks_proxy65_acl) }} }
 {% endif %}
 
+{% if allow_file_upload == true %}
+-- Support rich media transfers via http upload (XEP-0363)
+Component "upload.ursaoskius.com" "http_upload"
+http_upload_file_size_limit = 1024 * 1024 * 5
+{% endif %}
+
 ---Set up an external component (default component port is 5347)
 --
 -- External components allow adding various services, such as gateways/
