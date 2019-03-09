@@ -27,7 +27,9 @@
 prosody_package: prosody-0.11
 
 # Global admins
-prosody_admins: []
+prosody_admins:
+  - veldrina@ursaoskius.com
+  - alex@ursaoskius.com
 
 # Allow registration
 prosody_allow_registration: False
@@ -80,13 +82,10 @@ prosody_ssl: # Used if ssl is set for prosody_cert_type
   ciphers: []
 
 # Virtual hosts
-prosody_hosts:
-  - domain: ursaoskius.com
-    admins:
-      - veldrina@ursaoskius.com
-      - alex@ursaoskius.com
-    ssl_key: null
-    ssl_cert: null
+host:
+  domain: ursaoskius.com
+  ssl_key: null
+  ssl_cert: null
 
 # Multi-user chat
 muc_domain: rooms.ursaoskius.com
@@ -100,3 +99,4 @@ socks_proxy65_acl:
 
 # File upload
 allow_file_upload: true
+upload_file_size_limit_in_mb: 5

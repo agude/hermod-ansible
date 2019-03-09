@@ -108,7 +108,7 @@ allow_registration = {{ bool(prosody_allow_registration) }}
 
 {% if prosody_cert_type is equalto "letsencrypt" %}
 -- Let's Encrypt certificate location
-https_certificate = "/etc/prosody/certs/ursaoskius.com.crt"
+https_certificate = "/etc/prosody/certs/{{ host.domain }}.crt"
 
 {% elif prosody_cert_type is equalto "ssl" %}
 -- These are the SSL/TLS-related settings. If you don't want
@@ -198,49 +198,42 @@ log = {
 ----------- Virtual hosts -----------
 -- You need to add a VirtualHost entry for each domain you wish Prosody to serve.
 -- Settings under each VirtualHost entry apply *only* to that host.
-
-{% for host in prosody_hosts %}
 VirtualHost "{{ host.domain }}"
     enabled = true
-{% if host.admins is not none and host.admins is defined and host.admins|length >= 1 %}
-    admins = { {{ quoted_list(host.admins) }} }
-{% endif %}
 {% if host.ssl_cert is defined
-and host.ssl_key is defined 
-and host.ssl_cert is not none
-and host.ssl_key is not none
-%}
+  and host.ssl_key is defined
+  and host.ssl_cert is not none
+  and host.ssl_key is not none %}
     ssl = {
         key = "{{ host.ssl_key }}";
         certificate = "{{ host.ssl_cert }}";
     }
-{% endif %}
 
-{% endfor %}
+{% endif %}
 ------ Components ------
 -- You can specify components to add hosts that provide special services,
 -- like multi-user conferences, and transports.
 -- For more information on components, see http://prosody.im/doc/components
 
----Set up a MUC (multi-user chat) room server:
 {% if muc_domain is defined %}
+---Set up a MUC (multi-user chat) room server:
 Component "{{ muc_domain }}" "muc"
     name = "{{ muc_name }}"
-{% endif %}
 
--- Set up a SOCKS5 bytestream proxy for server-proxied file transfers:
+{% endif %}
 {% if socks_domain is defined %}
+-- Set up a SOCKS5 bytestream proxy for server-proxied file transfers:
 Component "{{ socks_domain }}" "proxy65"
 	proxy65_address = "{{ socks_proxy65_address }}"
 	proxy65_acl = { {{ quoted_list(socks_proxy65_acl) }} }
-{% endif %}
 
+{% endif %}
 {% if allow_file_upload == true %}
 -- Support rich media transfers via http upload (XEP-0363)
-Component "upload.ursaoskius.com" "http_upload"
-http_upload_file_size_limit = 1024 * 1024 * 5
-{% endif %}
+Component "upload.{{ host.domain }}" "http_upload"
+http_upload_file_size_limit = 1024 * 1024 * {{ upload_file_size_limit_in_mb or 5 }}
 
+{% endif %}
 ---Set up an external component (default component port is 5347)
 --
 -- External components allow adding various services, such as gateways/
