@@ -232,6 +232,7 @@ Component "{{ socks_domain }}" "proxy65"
 -- Support rich media transfers via http upload (XEP-0363)
 Component "upload.{{ host.domain }}" "http_upload"
 http_upload_file_size_limit = 1024 * 1024 * {{ upload_file_size_limit_in_mb or 5 }}
+http_max_content_size = 1024 * 1024 * {{ upload_file_size_limit_in_mb | at_least 10 }}
 
 {% endif %}
 ---Set up an external component (default component port is 5347)

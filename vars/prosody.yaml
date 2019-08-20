@@ -99,4 +99,4 @@ socks_proxy65_acl:
 
 # File upload
 allow_file_upload: true
-upload_file_size_limit_in_mb: 5
+upload_file_size_limit_in_mb: 10
